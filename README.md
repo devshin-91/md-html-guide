@@ -14,7 +14,20 @@ AI 에이전트와 일할 때 Markdown과 HTML을 언제 쓸지 정리한 지침
 | [`CONTRIBUTORS.md`](CONTRIBUTORS.md) | 사람, AI 작성자, 외부 검토자, 도구별 역할 |
 | [`REFERENCES.md`](REFERENCES.md) | 참고 자료 전체와 확인 수준 |
 | [`review-checklist.md`](review-checklist.md) | 결함 12개(C-1~m-3)를 어디서 어떻게 고쳤는지 |
+| [`skill/md-html-format/`](skill/md-html-format/SKILL.md) | 지침을 Claude Code 스킬로 줄인 것 |
 | [`measurement/`](measurement/) | 4절 측정 기록(`NOTES.md`), 스크립트, 생성 파일 |
+
+## 스킬로 쓰기
+
+`skill/md-html-format/SKILL.md`는 지침의 1~3절과 5절을 Claude Code 스킬로 줄인 것이다. 평소에는 스킬 목록의 설명 한 줄만 컨텍스트에 들어가고, 형식을 고르거나 HTML 보고서·검토 화면을 만들거나 에이전트에게 문서를 넘길 때 본문이 불린다. 근거가 필요하면 스킬이 `~/md-html-guide/md-html-guidelines.md`를 읽는다.
+
+설치는 폴더를 개인 스킬 폴더로 복사한다.
+
+```bash
+cp -r skill/md-html-format ~/.claude/skills/
+```
+
+지침을 고치면 스킬의 요약 부분도 함께 고친다.
 
 ## 측정 재현
 
