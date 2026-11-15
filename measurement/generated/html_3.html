@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>검토 화면 작성 규칙</title>
+<style>
+:root{
+  --bg:#f7f6f3;--surface:#ffffff;--surface-2:#f0eee9;--text:#1d1c1a;--muted:#6a675f;--line:#e2dfd7;
+  --accent:#2f5bd3;--accent-soft:#e7edfc;--ok:#1f7a4d;--ok-soft:#e3f3ea;--warn:#9a5b00;--warn-soft:#fbf0dc;
+  --g1:#2f5bd3;--g2:#7a3fc2;--g3:#b34a1f;--g4:#b0262f;--g5:#1f7a6a;
+  --radius:12px;--shadow:0 1px 2px rgba(0,0,0,.04),0 2px 8px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#151513;--surface:#1e1e1b;--surface-2:#262622;--text:#ecebe6;--muted:#a19e95;--line:#33322d;
+    --accent:#86a5ff;--accent-soft:#1f2a45;--ok:#6fd3a0;--ok-soft:#173226;--warn:#f0b75c;--warn-soft:#3a2b12;
+    --g1:#86a5ff;--g2:#c39bff;--g3:#ff9a70;--g4:#ff8189;--g5:#6fd8c6;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#151513;--surface:#1e1e1b;--surface-2:#262622;--text:#ecebe6;--muted:#a19e95;--line:#33322d;
+  --accent:#86a5ff;--accent-soft:#1f2a45;--ok:#6fd3a0;--ok-soft:#173226;--warn:#f0b75c;--warn-soft:#3a2b12;
+  --g1:#86a5ff;--g2:#c39bff;--g3:#ff9a70;--g4:#ff8189;--g5:#6fd8c6;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+  font-size:16px;line-height:1.7;word-break:keep-all;overflow-wrap:break-word}
+a{color:var(--accent)}
+.wrap{max-width:1120px;margin:0 auto;padding:32px 16px 80px;display:grid;grid-template-columns:220px minmax(0,1fr);gap:40px}
+@media (max-width:860px){.wrap{grid-template-columns:minmax(0,1fr);gap:20px;padding-top:20px}}
+header.top{grid-column:1/-1}
+.eyebrow{font-size:13px;letter-spacing:.04em;color:var(--muted);margin:0 0 6px}
+h1{font-size:clamp(24px,4vw,34px);line-height:1.3;margin:0 0 10px;letter-spacing:-.01em}
+.lede{margin:0;color:var(--muted);max-width:62ch}
+.viewnote{margin-top:16px;display:flex;gap:10px;align-items:flex-start;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:10px;padding:10px 14px;font-size:14px;color:var(--muted);max-width:720px}
+.viewnote b{color:var(--text)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
+button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--text);
+  border-radius:8px;padding:6px 12px}
+button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+:root[data-theme="dark"] button.primary{color:#0f1420}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary{color:#0f1420}}
+.progress{font-size:14px;color:var(--muted);margin-left:auto}
+.bar{height:4px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:10px;max-width:720px}
+.bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .2s}
+
+nav.side{position:sticky;top:20px;align-self:start}
+@media (max-width:860px){nav.side{position:static}}
+nav.side p{font-size:12px;color:var(--muted);margin:0 0 8px;letter-spacing:.04em}
+nav.side ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+@media (max-width:860px){nav.side ol{flex-direction:row;flex-wrap:wrap;gap:6px}}
+nav.side a{display:flex;justify-content:space-between;gap:8px;text-decoration:none;color:var(--text);font-size:14px;
+  padding:6px 10px;border-radius:8px;border-left:3px solid transparent}
+@media (max-width:860px){nav.side a{border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--surface)}}
+nav.side a:hover{background:var(--surface-2)}
+nav.side a span.n{color:var(--muted);font-variant-numeric:tabular-nums}
+
+main{min-width:0}
+.first{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);margin-bottom:36px}
+.first h2{font-size:18px;margin:0 0 4px}
+.first p.sub{margin:0 0 14px;color:var(--muted);font-size:14px}
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.trio{grid-template-columns:minmax(0,1fr)}}
+.trio div{background:var(--surface-2);border-radius:10px;padding:12px 14px;font-size:14px}
+.trio strong{display:block;font-size:13px;margin-bottom:4px}
+.trio .t1 strong{color:var(--accent)} .trio .t2 strong{color:var(--ok)} .trio .t3 strong{color:var(--warn)}
+
+section.group{margin-bottom:40px;scroll-margin-top:16px}
+.ghead{display:flex;align-items:baseline;gap:10px;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:14px}
+.ghead h2{font-size:20px;margin:0}
+.ghead .tag{font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;color:var(--c);border:1px solid var(--c)}
+.ghead .summary{font-size:14px;color:var(--muted);margin-left:auto;text-align:right}
+@media (max-width:640px){.ghead{flex-wrap:wrap}.ghead .summary{margin-left:0;text-align:left;width:100%}}
+
+.rule{position:relative;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--c);
+  border-radius:var(--radius);padding:16px 18px 16px 18px;margin-bottom:12px;box-shadow:var(--shadow);transition:opacity .2s}
+.rule.done{opacity:.62}
+.rule.done h3{text-decoration:line-through;text-decoration-color:var(--muted)}
+.rule-top{display:flex;gap:12px;align-items:flex-start}
+.rule input[type=checkbox]{width:18px;height:18px;margin-top:4px;flex:none;accent-color:var(--ok);cursor:pointer}
+.rule h3{font-size:17px;margin:0 0 6px;line-height:1.45}
+.rule p{margin:0 0 8px}
+.rule p:last-child{margin-bottom:0}
+.why{display:flex;gap:8px;font-size:14px;color:var(--muted);background:var(--surface-2);border-radius:8px;padding:8px 12px;margin-top:8px}
+.why b{color:var(--text);flex:none;font-weight:600}
+.do{display:flex;gap:8px;font-size:14px;margin-top:8px}
+.do b{flex:none;color:var(--c);font-weight:600}
+.pill{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);margin:2px 2px 0 0;color:var(--muted)}
+.pill.ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.pill.warn{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.callout{border:1px dashed var(--g4);border-radius:var(--radius);padding:14px 18px;background:var(--surface)}
+.g1{--c:var(--g1)}.g2{--c:var(--g2)}.g3{--c:var(--g3)}.g4{--c:var(--g4)}.g5{--c:var(--g5)}
+footer{grid-column:1/-1;border-top:1px solid var(--line);padding-top:16px;font-size:13px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);
+  padding:8px 16px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:.2s}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media print{nav.side,.toolbar,.bar,.rule input{display:none}.wrap{display:block}.rule{break-inside:avoid;box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow">작업 규칙 · 3절</p>
+    <h1>검토 화면(HTML 뷰)을 만들 때 지킬 것</h1>
+    <p class="lede">사람이 AI 산출물을 실제로 보고 판단하게 만드는 화면의 규칙 14가지. 뷰를 만든 뒤 항목마다 체크하고, 결과를 Markdown으로 복사할 수 있다.</p>
+    <div class="viewnote" role="note"><span aria-hidden="true">ⓘ</span><span>이 페이지도 <b>원본 문서 3절의 뷰</b>다. 내용이 원본과 다르면 원본이 맞다.</span></div>
+    <div class="toolbar">
+      <button class="primary" id="copyMd" type="button">체크 결과 MD로 복사</button>
+      <button id="reset" type="button">체크 초기화</button>
+      <button id="theme" type="button" aria-label="테마 전환">테마 전환</button>
+      <span class="progress" id="progress" aria-live="polite">0 / 14 적용</span>
+    </div>
+    <div class="bar" aria-hidden="true"><i id="barFill"></i></div>
+  </header>
+
+  <nav class="side" aria-label="섹션">
+    <p>섹션</p>
+    <ol>
+      <li><a href="#g1">원본과 구조 <span class="n" data-count="g1">0/3</span></a></li>
+      <li><a href="#g2">사람이 판단하게 <span class="n" data-count="g2">0/3</span></a></li>
+      <li><a href="#g3">설명과 표시 방식 <span class="n" data-count="g3">0/4</span></a></li>
+      <li><a href="#g4">누락 <span class="n" data-count="g4">0/1</span></a></li>
+      <li><a href="#g5">만들 때 <span class="n" data-count="g5">0/3</span></a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <div class="first">
+      <h2>뷰 맨 위에 둘 세 가지</h2>
+      <p class="sub">AI의 결론이 아니라 사람이 할 일부터 보여준다.</p>
+      <div class="trio">
+        <div class="t1"><strong>결정해야 할 항목</strong>사람이 고르거나 승인해야 하는 것</div>
+        <div class="t2"><strong>확인된 것 / 확인되지 않은 것</strong>무엇이 검증됐고 무엇이 아직인지</div>
+        <div class="t3"><strong>이 화면이 다루지 않은 것</strong>범위 밖이라 직접 봐야 하는 것</div>
+      </div>
+    </div>
+
+    <section class="group g1" id="g1">
+      <div class="ghead"><span class="tag">1</span><h2>원본과 구조</h2><span class="summary">뷰는 원본의 사본이고, 사람이 할 일이 먼저다</span></div>
+
+      <article class="rule g1" data-id="r1">
+        <div class="rule-top"><input type="checkbox" aria-label="적용함: 원본이 아니라 뷰다"><div>
+          <h3>원본이 아니라 뷰다</h3>
+          <p>뷰와 원본이 다르면 원본이 맞다. 뷰를 직접 고치지 말고 원본을 고친 뒤 다시 만든다.</p>
+          <div class="do"><b>할 일</b><span>뷰에 원본 파일과 날짜(또는 커밋)를 적는다.</span></div>
+        </div></div>
+      </article>
+
+      <article class="rule g1" data-id="r2">
+        <div class="rule-top"><input type="checkbox" aria-label="적용함: 맨 위에는 사람이 할 일"><div>
+          <h3>맨 위에는 AI의 결론이 아니라 사람이 할 일을 둔다</h3>
+          <p>결정해야 할 항목, 확인된 것과 확인되지 않은 것, 이 화면이 다루지 않은 것을 먼저 보여준다.</p>
+          <p>소제목은 그 섹션 내용을 요약하게 쓴다.</p>
+          <div class="do"><b>범위</b><span>MD에도 똑같이 적용된다.</span></div>
+        </div></div>
+      </article>
+
+      <article class="rule g1" data-id="r3">
+        <div class="rule-top"><input type="checkbox" aria-label="적용함: 짧게"><div>
+          <h3>짧게</h3>
+          <p>상위 요약이 긴 상세 자료보다 이해를 도왔고, 과도한 문서는 오히려 이해를 방해했다.</p>
+        </div></div>
+      </article>
+    </section>
+
+    <section class="group g2" id="g2">
+      <div class="ghead"><span class="tag">2</span><h2>사람이 판단하게 만들기</h2><span class="summary">가정을 확인하게 하고, 사람 판단을 먼저 받고, 결과를 돌려준다</span></div>
+
+      <article class="rule g2" data-id="r4">
+        <div class="rule-top"><input type="checkbox" aria-label="적용함: 이 계획의 가정 섹션"><div>
+          <h3>AI 계획에는 "이 계획의 가정" 섹션을 두고 사람이 하나씩 확인하게 한다</h3>
+          <div class="why"><b>근거</b><span>AI가 만든 계획을 검토할 때 가정을 찾게 하자 과신이 가장 많이 줄었고 부담은 늘지 않았다.</span></div>
+        </div></div>
+      </article>
+
+      <article class="rule g2" data-id="r5">
+        <div class="rule-top"><input type="checkbox" aria-label="적용함: 사람의 판단을 먼저"><div>
+          <h3>가능하면 AI 추천보다 사람의 판단을 먼저 받는다</h3>
+          <div class="why"><b>근거</b><span>억지로 생각하게 만드는 설계가 단순 설명보다 과신을 크게 줄였다.</span></div>
+          <div class="do"><b>주의</b><span>가장 인기가 없었으니 중요한 결정에만 쓴다.</span></div>
+        </div></div>
+      </article>
+
+      <article class="rule g2" data-id="r6">
+        <div class="rule-top"><input type="checkbox" aria-label="적용함: 고른 결과는 export"><div>
+          <h3>고른 결과는 export한다</h3>
+          <p>JSON·MD·프롬프트로 복사해 에이전트에게 돌려준다.</p>
+          <p><span class="pill">JSON</span><span class="pill">MD</span><span class="pill">프롬프트</span></p>
+        </div></div>
+      </article>
+    </section>
+
+    <section class="group g3" id="g3">
+      <div class="ghead"><span class="tag">3</span><h2>설명과 표시 방식</h2><span class="summary">설명보다 검증 경로, 조언보다 판단 정보</span></div>
+
+      <article class="rule g3" data-id="r7">
+        <div class="rule-top"><input type="checkbox" aria-label="적용함: 설명을 더 붙이지 않는다"><div>
+          <h3>설명을 더 붙이는 것으로 검토가 나아지지 않는다</h3>
+          <div class="why"><b>근거</b><span>AI 설명은 맞든 틀리든 수용만 늘렸다. 설명이 과신을 줄인 건 검증 비용을 낮출 때뿐이었다.</span></div>
+          <div class="do"><b>할 일</b><span>주장마다 근거(코드 줄, 출처 링크)로 바로 가서 하나씩 확인할 수 있게 한다.</span></div>
+        </div></div>
+      </article>
+
+      <article class="rule g3" data-id="r8">
+        <div class="rule-top"><input type="checkbox" aria-label="적용함: AI 부분과 사람 확인 부분 구분"><div>
+          <h3>AI가 만든 부분과 사람이 확인한 부분을 나눠 표시한다</h3>
+          <p>주장마다 <span class="pill ok">검증됨</span> / <span class="pill warn">미검증</span>이나 신뢰도를 붙이고, 해결되지 않은 불확실성을 드러낸다.</p>
+          <div class="why"><b>근거</b><span>항목별 신뢰도 표시는 적절한 의존을 늘렸다.</span></div>
+        </div></div>
+      </article>
+
+      <article class="rule g3" data-id="r9">
+        <div class="rule-top"><input type="checkbox" aria-label="적용함: AI 조언을 가장 눈에 띄게 두지 않는다"><div>
+          <h3>AI의 조언을 가장 눈에 띄게 두지 않는다</h3>
+          <div class="why"><b>근거</b><span>눈에 띄게 보여준 조언은 틀려도 더 따랐고, 세부 정보가 지나치게 많으면 덜 신중해졌다.</span></div>
+          <div class="do"><b>할 일</b><span>"이렇게 하라"는 권고보다 판단에 필요한 정보를 보여준다.</span></div>
+        </div></div>
+      </article>
+
+      <article class="rule g3" data-id="r10">
+        <div class="rule-top"><input type="checkbox" aria-label="적용함: 보기 좋은 것과 맞는 것 구분"><div>
+          <h3>보기 좋은 것과 맞는 것을 구분한다</h3>
+          <p>깔끔한 화면, 정돈된 PR 설명은 품질 신호가 아니다. 도구가 템플릿으로 찍어 내는 경우가 많다.</p>
+        </div></div>
+      </article>
+    </section>
+
+    <section class="group g4" id="g4">
+      <div class="ghead"><span class="tag">4</span><h2>누락</h2><span class="summary">AI가 놓친 것은 화면에 없으니 범위를 적는다</span></div>
+
+      <article class="rule g4 callout" data-id="r11">
+        <div class="rule-top"><input type="checkbox" aria-label="적용함: 이 화면이 다루지 않은 것"><div>
+          <h3>"이 화면이 다루지 않은 것"을 꼭 적는다</h3>
+          <div class="why"><b>근거</b><span>AI가 짚어 준 곳만 보게 되기 쉽고, AI가 놓친 것은 숙련자도 그대로 따라갔다.</span></div>
+          <div class="do"><b>할 일</b><span>중요한 변경은 원본 diff로 직접 확인한다.</span></div>
+        </div></div>
+      </article>
+    </section>
+
+    <section class="group g5" id="g5">
+      <div class="ghead"><span class="tag">5</span><h2>만들 때</h2><span class="summary">필요할 때만, CSS는 공용으로, 오픈 모델은 내용 먼저</span></div>
+
+      <article class="rule g5" data-id="r12">
+        <div class="rule-top"><input type="checkbox" aria-label="적용함: 필요할 때만 만든다"><div>
+          <h3>필요할 때만 만든다</h3>
+          <p>HTML은 생성 시간과 토큰이 더 든다. 사람이 실제로 보고 판단할 산출물에만 쓴다.</p>
+        </div></div>
+      </article>
+
+      <article class="rule g5" data-id="r13">
+        <div class="rule-top"><input type="checkbox" aria-label="적용함: CSS를 공용 파일로"><div>
+          <h3>여러 뷰를 만들면 CSS를 공용 파일로 뺀다</h3>
+          <div class="why"><b>근거</b><span>HTML 토큰의 절반 가까이가 CSS다.</span></div>
+        </div></div>
+      </article>
+
+      <article class="rule g5" data-id="r14">
+        <div class="rule-top"><input type="checkbox" aria-label="적용함: 오픈 모델은 내용을 먼저"><div>
+          <h3>오픈 모델이면 내용을 먼저 쓰게 한다</h3>
+          <div class="why"><b>근거</b><span>오픈 모델은 형식 지시만으로 추론이 떨어졌고, 내용과 서식을 나누면 대부분 회복됐다.</span></div>
+          <div class="do"><b>참고</b><span>최신 비공개 모델(Claude 등)에서는 이 손실이 거의 없었다.</span></div>
+        </div></div>
+      </article>
+    </section>
+  </main>
+
+  <footer>체크 상태는 이 브라우저에만 저장된다. 공유하려면 "체크 결과 MD로 복사"를 쓴다.</footer>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  var KEY='review-view-rules-v1';
+  var rules=[].slice.call(document.querySelectorAll('.rule'));
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  function update(){
+    var done=0;
+    rules.forEach(function(r){var on=!!state[r.dataset.id];r.classList.toggle('done',on);r.querySelector('input').checked=on;if(on)done++;});
+    document.getElementById('progress').textContent=done+' / '+rules.length+' 적용';
+    document.getElementById('barFill').style.width=(done/rules.length*100)+'%';
+    ['g1','g2','g3','g4','g5'].forEach(function(g){
+      var list=document.querySelectorAll('#'+g+' .rule');var d=0;
+      list.forEach(function(r){if(state[r.dataset.id])d++;});
+      var el=document.querySelector('[data-count="'+g+'"]');if(el)el.textContent=d+'/'+list.length;
+    });
+  }
+  rules.forEach(function(r){
+    r.querySelector('input').addEventListener('change',function(e){state[r.dataset.id]=e.target.checked;save();update();});
+  });
+  function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},1800);}
+  document.getElementById('copyMd').addEventListener('click',function(){
+    var out=['## 검토 화면 규칙 체크 결과',''];
+    document.querySelectorAll('section.group').forEach(function(s){
+      out.push('### '+s.querySelector('h2').textContent);
+      s.querySelectorAll('.rule').forEach(function(r){out.push('- ['+(state[r.dataset.id]?'x':' ')+'] '+r.querySelector('h3').textContent);});
+      out.push('');
+    });
+    var text=out.join('\n');
+    function fallback(){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();
+      try{document.execCommand('copy');toast('복사했다');}catch(e){toast('복사 실패');}document.body.removeChild(ta);}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){toast('복사했다');},fallback);}else{fallback();}
+  });
+  document.getElementById('reset').addEventListener('click',function(){state={};save();update();toast('초기화했다');});
+  document.getElementById('theme').addEventListener('click',function(){
+    var root=document.documentElement;var cur=root.getAttribute('data-theme');
+    var dark=cur?cur==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;
+    root.setAttribute('data-theme',dark?'light':'dark');
+  });
+  update();
+})();
+</script>
+</body>
+</html>

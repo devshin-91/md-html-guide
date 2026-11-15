@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>검토 화면 작성 규칙</title>
+<style>
+:root{
+  --bg:#f6f5f2; --surface:#ffffff; --surface-2:#f0eee9; --text:#1d1c1a; --muted:#5f5c56; --faint:#8a867e;
+  --line:#e2dfd8; --accent:#2f5d8a; --accent-soft:#e4ecf5; --do:#2c6e49; --do-soft:#e3f1e8;
+  --why:#7a5a1e; --why-soft:#f6eedd; --warn:#9a3b2e; --warn-soft:#f8e6e2; --focus:#2f5d8a;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 2px 8px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#161616; --surface:#1f1f1e; --surface-2:#282826; --text:#ecebe7; --muted:#b0ada6; --faint:#85827b;
+    --line:#34332f; --accent:#8db6e0; --accent-soft:#22303e; --do:#86c9a1; --do-soft:#1d3127;
+    --why:#e2c07f; --why-soft:#352c1b; --warn:#ec9a8c; --warn-soft:#3a2420; --focus:#8db6e0;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#161616; --surface:#1f1f1e; --surface-2:#282826; --text:#ecebe7; --muted:#b0ada6; --faint:#85827b;
+  --line:#34332f; --accent:#8db6e0; --accent-soft:#22303e; --do:#86c9a1; --do-soft:#1d3127;
+  --why:#e2c07f; --why-soft:#352c1b; --warn:#ec9a8c; --warn-soft:#3a2420; --focus:#8db6e0;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+  font-size:16px;line-height:1.7;word-break:keep-all;overflow-wrap:anywhere}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 16px 64px;display:grid;grid-template-columns:220px minmax(0,1fr);gap:40px}
+@media (max-width:860px){.wrap{grid-template-columns:1fr;gap:20px;padding-top:20px}}
+header.top{grid-column:1/-1}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--accent);margin:0 0 6px}
+h1{font-size:clamp(24px,4vw,32px);line-height:1.3;margin:0 0 10px;letter-spacing:-.01em}
+.lede{color:var(--muted);margin:0;max-width:62ch}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:16px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.chip{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;line-height:1.6;white-space:nowrap}
+.chip.do{background:var(--do-soft);color:var(--do)}
+.chip.why{background:var(--why-soft);color:var(--why)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+
+nav.toc{position:sticky;top:20px;align-self:start;font-size:14px}
+@media (max-width:860px){nav.toc{position:static}}
+.toc h2{font-size:12px;color:var(--faint);letter-spacing:.06em;margin:0 0 8px;font-weight:600}
+.toc ol{list-style:none;margin:0 0 20px;padding:0}
+.toc li a{display:flex;justify-content:space-between;gap:8px;padding:6px 10px;border-radius:6px;color:var(--text);text-decoration:none}
+.toc li a:hover{background:var(--surface-2)}
+.toc li a .n{color:var(--faint);font-variant-numeric:tabular-nums}
+@media (max-width:860px){.toc ol{display:flex;flex-wrap:wrap;gap:6px}.toc li a{background:var(--surface);border:1px solid var(--line)}}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;box-shadow:var(--shadow)}
+.panel .count{font-size:14px;margin:0 0 8px}
+.bar{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-bottom:12px}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+.btns{display:flex;flex-wrap:wrap;gap:6px}
+button{font:inherit;font-size:13px;padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);cursor:pointer}
+button:hover{border-color:var(--accent)}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.panel .hint{font-size:12px;color:var(--faint);margin:10px 0 0;line-height:1.5}
+.toast{font-size:12px;color:var(--do);min-height:18px;margin-top:6px}
+
+main section{margin-bottom:40px;scroll-margin-top:16px}
+main h2{font-size:20px;margin:0 0 4px;display:flex;align-items:baseline;gap:10px}
+main h2 .gn{font-size:13px;color:var(--faint);font-weight:600;font-variant-numeric:tabular-nums}
+.gsum{color:var(--muted);margin:0 0 16px;font-size:15px}
+.rule{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow);transition:border-color .15s}
+.rule.checked{border-color:var(--do)}
+.rule-head{display:flex;gap:12px;align-items:flex-start}
+.rule-head input{margin-top:6px;width:18px;height:18px;accent-color:var(--do);flex:none;cursor:pointer}
+.rule h3{font-size:17px;margin:0;line-height:1.5}
+.rule h3 label{cursor:pointer}
+.rows{margin:10px 0 0 30px;display:grid;gap:8px}
+@media (max-width:480px){.rows{margin-left:0}}
+.row{display:grid;grid-template-columns:58px minmax(0,1fr);gap:10px;align-items:start;font-size:15px}
+.row .chip{justify-self:start;margin-top:3px}
+.row p{margin:0}
+.row.why p{color:var(--muted)}
+q{quotes:"“" "”"}
+.note{background:var(--accent-soft);border-radius:10px;padding:14px 18px;font-size:14px;color:var(--text);margin-top:8px}
+.note b{color:var(--accent)}
+footer{grid-column:1/-1;border-top:1px solid var(--line);padding-top:16px;font-size:13px;color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow">3장 · 작성 규칙</p>
+    <h1>검토 화면(HTML 뷰)을 만들 때 지킬 것</h1>
+    <p class="lede">뷰는 원본을 대신하지 않고, 사람이 판단하게 돕는 도구다. 아래 14개 규칙을 다섯 묶음으로 나눴고, 각 규칙은 <b>할 일</b>과 그 규칙이 나온 <b>근거</b>를 따로 적었다. 체크해 두면 지금 만드는 뷰의 점검표로 쓸 수 있다.</p>
+    <div class="legend">
+      <span><span class="chip do">할 일</span> 뷰를 만들 때 지킬 행동</span>
+      <span><span class="chip why">근거</span> 관찰된 결과</span>
+      <span><span class="chip warn">주의</span> 쓸 때의 제약</span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="목차">
+    <h2>묶음</h2>
+    <ol>
+      <li><a href="#g1">원본과 구조 <span class="n">3</span></a></li>
+      <li><a href="#g2">사람이 판단하게 만들기 <span class="n">3</span></a></li>
+      <li><a href="#g3">설명과 표시 방식 <span class="n">4</span></a></li>
+      <li><a href="#g4">누락 <span class="n">1</span></a></li>
+      <li><a href="#g5">만들 때 <span class="n">3</span></a></li>
+    </ol>
+    <div class="panel" aria-live="polite">
+      <p class="count"><b id="done">0</b> / <span id="total">14</span> 적용</p>
+      <div class="bar"><i id="barfill"></i></div>
+      <div class="btns">
+        <button type="button" id="copyMd">MD 복사</button>
+        <button type="button" id="copyJson">JSON 복사</button>
+        <button type="button" id="reset">초기화</button>
+      </div>
+      <div class="toast" id="toast"></div>
+      <p class="hint">체크 결과를 복사해 에이전트에게 돌려줄 수 있다. 체크 상태는 이 브라우저에만 남는다.</p>
+    </div>
+  </nav>
+
+  <main id="rules">
+    <section id="g1" data-group="원본과 구조">
+      <h2><span class="gn">01</span>원본과 구조</h2>
+      <p class="gsum">원본이 기준이고, 맨 위에는 사람이 할 일을, 전체는 짧게.</p>
+
+      <article class="rule" data-id="view-not-source">
+        <div class="rule-head"><input type="checkbox" id="r1"><h3><label for="r1">원본이 아니라 뷰다.</label></h3></div>
+        <div class="rows">
+          <div class="row"><span class="chip do">할 일</span><p>뷰와 원본이 다르면 원본이 맞다. 뷰를 직접 고치지 말고 원본을 고친 뒤 다시 만든다.</p></div>
+          <div class="row"><span class="chip do">할 일</span><p>뷰에 원본 파일과 날짜(또는 커밋)를 적는다.</p></div>
+        </div>
+      </article>
+
+      <article class="rule" data-id="human-tasks-first">
+        <div class="rule-head"><input type="checkbox" id="r2"><h3><label for="r2">맨 위에는 AI의 결론이 아니라 사람이 할 일을 둔다.</label></h3></div>
+        <div class="rows">
+          <div class="row"><span class="chip do">할 일</span><p>결정해야 할 항목, 확인된 것과 확인되지 않은 것, 이 화면이 다루지 않은 것을 먼저 보여준다.</p></div>
+          <div class="row"><span class="chip do">할 일</span><p>소제목은 그 섹션 내용을 요약하게 쓴다.</p></div>
+          <div class="row"><span class="chip warn">범위</span><p>MD에도 똑같이 적용된다.</p></div>
+        </div>
+      </article>
+
+      <article class="rule" data-id="keep-short">
+        <div class="rule-head"><input type="checkbox" id="r3"><h3><label for="r3">짧게.</label></h3></div>
+        <div class="rows">
+          <div class="row why"><span class="chip why">근거</span><p>상위 요약이 긴 상세 자료보다 이해를 도왔고, 과도한 문서는 오히려 이해를 방해했다.</p></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="g2" data-group="사람이 판단하게 만들기">
+      <h2><span class="gn">02</span>사람이 판단하게 만들기</h2>
+      <p class="gsum">가정을 하나씩 확인하게 하고, 중요한 결정은 사람이 먼저 판단하게 한 뒤, 고른 결과를 돌려준다.</p>
+
+      <article class="rule" data-id="assumptions">
+        <div class="rule-head"><input type="checkbox" id="r4"><h3><label for="r4">AI 계획에는 <q>이 계획의 가정</q> 섹션을 두고 사람이 하나씩 확인하게 한다.</label></h3></div>
+        <div class="rows">
+          <div class="row why"><span class="chip why">근거</span><p>AI가 만든 계획을 검토할 때 가정을 찾게 하자 과신이 가장 많이 줄었고 부담은 늘지 않았다.</p></div>
+        </div>
+      </article>
+
+      <article class="rule" data-id="human-first">
+        <div class="rule-head"><input type="checkbox" id="r5"><h3><label for="r5">가능하면 AI 추천보다 사람의 판단을 먼저 받는다.</label></h3></div>
+        <div class="rows">
+          <div class="row why"><span class="chip why">근거</span><p>억지로 생각하게 만드는 설계가 단순 설명보다 과신을 크게 줄였다.</p></div>
+          <div class="row"><span class="chip warn">주의</span><p>대신 가장 인기가 없었으니 중요한 결정에만 쓴다.</p></div>
+        </div>
+      </article>
+
+      <article class="rule" data-id="export">
+        <div class="rule-head"><input type="checkbox" id="r6"><h3><label for="r6">고른 결과는 export한다.</label></h3></div>
+        <div class="rows">
+          <div class="row"><span class="chip do">할 일</span><p>JSON·MD·프롬프트로 복사해 에이전트에게 돌려준다.</p></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="g3" data-group="설명과 표시 방식">
+      <h2><span class="gn">03</span>설명과 표시 방식</h2>
+      <p class="gsum">설명을 늘리지 말고 검증 비용을 낮춘다. 확인 여부를 표시하고, 권고보다 판단 정보를 보여주며, 겉모습을 품질로 읽지 않는다.</p>
+
+      <article class="rule" data-id="evidence-not-explanation">
+        <div class="rule-head"><input type="checkbox" id="r7"><h3><label for="r7">설명을 더 붙이는 것으로 검토가 나아지지 않는다.</label></h3></div>
+        <div class="rows">
+          <div class="row why"><span class="chip why">근거</span><p>AI 설명은 맞든 틀리든 수용만 늘렸다. 설명이 과신을 줄인 건 검증 비용을 낮출 때뿐이었다.</p></div>
+          <div class="row"><span class="chip do">할 일</span><p>주장마다 근거(코드 줄, 출처 링크)로 바로 가서 하나씩 확인할 수 있게 한다.</p></div>
+        </div>
+      </article>
+
+      <article class="rule" data-id="mark-verified">
+        <div class="rule-head"><input type="checkbox" id="r8"><h3><label for="r8">AI가 만든 부분과 사람이 확인한 부분을 나눠 표시한다.</label></h3></div>
+        <div class="rows">
+          <div class="row"><span class="chip do">할 일</span><p>주장마다 <q>검증됨/미검증</q>이나 신뢰도를 붙이고, 해결되지 않은 불확실성을 드러낸다.</p></div>
+          <div class="row why"><span class="chip why">근거</span><p>항목별 신뢰도 표시는 적절한 의존을 늘렸다.</p></div>
+        </div>
+      </article>
+
+      <article class="rule" data-id="advice-not-prominent">
+        <div class="rule-head"><input type="checkbox" id="r9"><h3><label for="r9">AI의 조언을 가장 눈에 띄게 두지 않는다.</label></h3></div>
+        <div class="rows">
+          <div class="row why"><span class="chip why">근거</span><p>눈에 띄게 보여준 조언은 틀려도 더 따랐고, 세부 정보가 지나치게 많으면 덜 신중해졌다.</p></div>
+          <div class="row"><span class="chip do">할 일</span><p><q>이렇게 하라</q>는 권고보다 판단에 필요한 정보를 보여준다.</p></div>
+        </div>
+      </article>
+
+      <article class="rule" data-id="looks-vs-correct">
+        <div class="rule-head"><input type="checkbox" id="r10"><h3><label for="r10">보기 좋은 것과 맞는 것을 구분한다.</label></h3></div>
+        <div class="rows">
+          <div class="row why"><span class="chip why">근거</span><p>깔끔한 화면, 정돈된 PR 설명은 품질 신호가 아니다. 도구가 템플릿으로 찍어 내는 경우가 많다.</p></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="g4" data-group="누락">
+      <h2><span class="gn">04</span>누락</h2>
+      <p class="gsum">AI가 놓친 것은 사람도 놓친다. 다루지 않은 범위를 적고 중요한 변경은 diff로 본다.</p>
+
+      <article class="rule" data-id="not-covered">
+        <div class="rule-head"><input type="checkbox" id="r11"><h3><label for="r11"><q>이 화면이 다루지 않은 것</q>을 꼭 적는다.</label></h3></div>
+        <div class="rows">
+          <div class="row why"><span class="chip why">근거</span><p>AI가 짚어 준 곳만 보게 되기 쉽고, AI가 놓친 것은 숙련자도 그대로 따라갔다.</p></div>
+          <div class="row"><span class="chip do">할 일</span><p>중요한 변경은 원본 diff로 직접 확인한다.</p></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="g5" data-group="만들 때">
+      <h2><span class="gn">05</span>만들 때</h2>
+      <p class="gsum">필요한 산출물에만 만들고, CSS는 공용으로 빼고, 오픈 모델이면 내용과 서식을 나눈다.</p>
+
+      <article class="rule" data-id="only-when-needed">
+        <div class="rule-head"><input type="checkbox" id="r12"><h3><label for="r12">필요할 때만 만든다.</label></h3></div>
+        <div class="rows">
+          <div class="row why"><span class="chip why">근거</span><p>HTML은 생성 시간과 토큰이 더 든다.</p></div>
+          <div class="row"><span class="chip do">할 일</span><p>사람이 실제로 보고 판단할 산출물에만 쓴다.</p></div>
+        </div>
+      </article>
+
+      <article class="rule" data-id="shared-css">
+        <div class="rule-head"><input type="checkbox" id="r13"><h3><label for="r13">여러 뷰를 만들면 CSS를 공용 파일로 뺀다.</label></h3></div>
+        <div class="rows">
+          <div class="row why"><span class="chip why">근거</span><p>HTML 토큰의 절반 가까이가 CSS다.</p></div>
+        </div>
+      </article>
+
+      <article class="rule" data-id="content-first-open-models">
+        <div class="rule-head"><input type="checkbox" id="r14"><h3><label for="r14">오픈 모델이면 내용을 먼저 쓰게 한다.</label></h3></div>
+        <div class="rows">
+          <div class="row why"><span class="chip why">근거</span><p>오픈 모델은 형식 지시만으로 추론이 떨어졌고, 내용과 서식을 나누면 대부분 회복됐다.</p></div>
+          <div class="row"><span class="chip warn">범위</span><p>최신 비공개 모델(Claude 등)에서는 이 손실이 거의 없었다.</p></div>
+        </div>
+      </article>
+    </section>
+
+    <div class="note"><b>이 페이지도 뷰다.</b> 원본 문서와 내용이 다르면 원본을 따른다. 할 일·근거·주의 구분과 묶음 요약은 읽기 쉽게 하려고 붙인 것이며 원본 문구는 바꾸지 않았다.</div>
+  </main>
+
+  <footer>3장 「검토 화면(HTML 뷰)을 만들 때 지킬 것」을 바탕으로 만든 참고 페이지.</footer>
+</div>
+
+<script>
+(function(){
+  var KEY='review-view-rules-v1';
+  var rules=[].slice.call(document.querySelectorAll('.rule'));
+  var boxes=rules.map(function(r){return r.querySelector('input[type=checkbox]');});
+  var doneEl=document.getElementById('done'), bar=document.getElementById('barfill'), toast=document.getElementById('toast');
+  document.getElementById('total').textContent=rules.length;
+
+  function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){return {};}}
+  function save(s){try{localStorage.setItem(KEY,JSON.stringify(s));}catch(e){}}
+  function state(){var s={};rules.forEach(function(r,i){s[r.dataset.id]=boxes[i].checked;});return s;}
+  function render(){
+    var n=0;rules.forEach(function(r,i){r.classList.toggle('checked',boxes[i].checked);if(boxes[i].checked)n++;});
+    doneEl.textContent=n;bar.style.width=(n/rules.length*100)+'%';
+  }
+  var saved=load();
+  rules.forEach(function(r,i){boxes[i].checked=!!saved[r.dataset.id];boxes[i].addEventListener('change',function(){save(state());render();});});
+  render();
+
+  function title(r){return r.querySelector('h3').textContent.replace(/\s+/g,' ').trim();}
+  function group(r){return r.closest('section').dataset.group;}
+  function items(){return rules.map(function(r,i){return {id:r.dataset.id,group:group(r),rule:title(r),applied:boxes[i].checked};});}
+
+  function toMd(){
+    var out=['# 검토 화면 규칙 점검 결과',''],g='';
+    items().forEach(function(it){
+      if(it.group!==g){g=it.group;out.push('','## '+g);}
+      out.push('- ['+(it.applied?'x':' ')+'] '+it.rule);
+    });
+    return out.join('\n').replace(/\n\n\n/g,'\n\n');
+  }
+  function toJson(){return JSON.stringify({checklist:'검토 화면(HTML 뷰)을 만들 때 지킬 것',items:items()},null,2);}
+
+  function copy(text,label){
+    function ok(){toast.textContent=label+' 복사됨';setTimeout(function(){toast.textContent='';},1800);}
+    function fallback(){
+      var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+      document.body.appendChild(ta);ta.select();
+      try{document.execCommand('copy');ok();}catch(e){toast.textContent='복사 실패';}
+      document.body.removeChild(ta);
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(ok,fallback);}else{fallback();}
+  }
+  document.getElementById('copyMd').addEventListener('click',function(){copy(toMd(),'MD');});
+  document.getElementById('copyJson').addEventListener('click',function(){copy(toJson(),'JSON');});
+  document.getElementById('reset').addEventListener('click',function(){boxes.forEach(function(b){b.checked=false;});save(state());render();});
+})();
+</script>
+</body>
+</html>
